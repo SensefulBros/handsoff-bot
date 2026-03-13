@@ -17,8 +17,8 @@ Run:
     streamlit run restaurant_bot.py
 """
 
+import os
 import asyncio
-import dotenv
 import streamlit as st
 from pydantic import BaseModel
 from agents import (
@@ -36,7 +36,26 @@ from agents import (
     output_guardrail,
 )
 
-dotenv.load_dotenv()
+# ============================================================
+# API Key — works on both Streamlit Cloud and local
+# ============================================================
+# Priority: st.secrets (Cloud) → env var (local) → .env file (fallback)
+try:
+    if "OPENAI_API_KEY" in st.secrets:
+        os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+except FileNotFoundError:
+    pass  # No secrets.toml — that's fine for local dev
+
+if not os.environ.get("OPENAI_API_KEY"):
+    try:
+        import dotenv
+        dotenv.load_dotenv()
+    except ImportError:
+        pass
+
+if not os.environ.get("OPENAI_API_KEY"):
+    st.error("⚠️ OPENAI_API_KEY가 설정되지 않았습니다. Streamlit secrets 또는 환경 변수를 확인하세요.")
+    st.stop()
 
 # ============================================================
 # Page config
