@@ -697,8 +697,8 @@ async def stream_response(user_message: str):
                         )
 
             final_display = AGENT_DISPLAY.get(
-                stream.result.last_agent.name,
-                (stream.result.last_agent.name, ""),
+                current_agent_name,
+                (current_agent_name, ""),
             )[0]
             status_box.update(label=f"✅ {final_display}가 답변 완료", state="complete")
 
